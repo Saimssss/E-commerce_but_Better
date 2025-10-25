@@ -188,10 +188,11 @@ const productos = [
 const contenedorProductos = document.querySelector("#contenedor-productos");
 const botonesCategorias = document.querySelectorAll(".boton-categoria");
 const tituloPrincipal = document.querySelector("#titulo-principal");
-let  botonesAgregar = document.querySelectorAll(".producto-agregar");
+let botonesAgregar = document.querySelectorAll(".producto-agregar");
+const numerito = document.querySelector("#numerito");
 
 
- function cargarProductos(productosElegidos) {
+function cargarProductos(productosElegidos) {
 
     contenedorProductos.innerHTML = "";
 
@@ -212,7 +213,7 @@ let  botonesAgregar = document.querySelectorAll(".producto-agregar");
     })
 
     actualizarBotonesAgregar();
- }
+}
 
 cargarProductos(productos);
 
@@ -229,13 +230,13 @@ botonesCategorias.forEach(boton => {
             tituloPrincipal.innerText = productoCategoria.categoria.nombre;
 
             const productosBoton = productos.filter(producto => producto.categoria.id === e.currentTarget.id);
-        cargarProductos(productosBoton);
+            cargarProductos(productosBoton);
         } else {
             tituloPrincipal.innerText = "todos los productos";
             cargarProductos(productos)
         }
 
-       
+
     })
 });
 
@@ -253,9 +254,23 @@ function agregarAlCarrito(e) {
 
     const idBoton = e.currentTarget.id;
     const productoAgregado = productos.find(producto => producto.id === idBoton);
-    console.log(productoAgregado);
 
+    if (productosEnCarrito.some(producto => producto.id === idBoton)) {
+        const index = productosEnCarrito.findIndex(producto => producto.id === idBoton);
+        productosEnCarrito[index].cantidad++;
+
+    } else {
+        productoAgregado.cantidad = 1;
+        productosEnCarrito.push(productoAgregado);
+
+    }
+    actualizarNumerito();
+    
+    localStorage.setItem("productos-en-carrito", JSON.stringify(productosEnCarrito));
 }
 
-
-
+function actualizarNumerito() {
+    let nuevoNumerito = productosEnCarrito.reduce((acc, producto) => acc + producto.cantidad, 0)
+    numerito.innerText = nuevoNumerito;
+    
+} 
